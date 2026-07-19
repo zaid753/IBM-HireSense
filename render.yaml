@@ -19,6 +19,5 @@ services:
 databases:
   - name: hiresense-db
     databaseName: hiresense
-    user: postgres
     region: ohio
     plan: free
