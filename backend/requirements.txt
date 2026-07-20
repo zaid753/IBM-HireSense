@@ -15,15 +15,7 @@ httpx
 PyMuPDF
 pdfplumber
 python-docx
-spacy
-nltk
-scikit-learn
-pandas
-numpy
-fpdf
 # AI Phase
-sentence-transformers>=3.0.1
-torch>=2.6.0
 google-generativeai>=0.7.2
 ics>=0.7.2
 slowapi>=0.1.9
@@ -32,3 +24,6 @@ black
 isort
 mypy
 flake8
+scikit-learn
+spacy
+sentence-transformers

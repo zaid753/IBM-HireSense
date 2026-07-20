@@ -1,0 +1,9 @@
+{
+  "name": "ibm-hiresense",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx --yes concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && ./venv/bin/uvicorn app.main:app --reload"
+  }
+}

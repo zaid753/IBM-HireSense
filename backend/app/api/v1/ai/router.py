@@ -56,10 +56,17 @@ def semantic_search(
     # Fetch candidates belonging to the current recruiter
     candidates = db.query(CandidateProfile).join(Resume).filter(Resume.recruiter_id == current_user.id).all()
     
-    search_docs = [
-        {"id": c.id, "name": c.full_name, "text": f"{c.skills} {c.experience} {c.education}"}
-        for c in candidates
-    ]
+    from app.models.resume import ATSResult
+    
+    search_docs = []
+    for c in candidates:
+        ats = db.query(ATSResult).filter(ATSResult.resume_id == c.resume_id).first()
+        skills = ", ".join(ats.matched_skills) if ats and ats.matched_skills else ""
+        search_docs.append({
+            "id": c.resume_id,
+            "name": c.full_name,
+            "text": f"{skills} {c.location}"
+        })
     
     if not search_docs:
         return {"query": request.query, "results": []}
@@ -96,8 +103,8 @@ def get_recommendations(
     # Hidden talent could be someone with a high ATS score but lower final score, or just the second best.
     hidden_talent_candidate = None
     if len(rankings) > 1:
-        # Sort by ats_score to find a "hidden" talent
-        hidden_rank = sorted(rankings[1:], key=lambda x: x.ats_score, reverse=True)[0]
+        # Just pick the second best candidate as "hidden" talent to avoid DB joins on ATSResult
+        hidden_rank = rankings[1]
         hidden_talent_candidate = db.query(CandidateProfile).filter(CandidateProfile.resume_id == hidden_rank.resume_id).first()
         hidden_match = hidden_rank.final_score
         hidden_id = hidden_talent_candidate.resume_id if hidden_talent_candidate else None

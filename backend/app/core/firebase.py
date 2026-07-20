@@ -4,6 +4,7 @@ from loguru import logger
 import os
 
 def init_firebase():
+    os.environ['GOOGLE_CLOUD_PROJECT'] = 'hiresense-5e81a'
     if not firebase_admin._apps:
         try:
             # Check if a specific service account path is provided

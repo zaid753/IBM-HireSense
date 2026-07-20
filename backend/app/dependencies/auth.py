@@ -45,6 +45,12 @@ def get_current_user(
         db.refresh(new_user)
         user = new_user
         
+        try:
+            from app.services.template import clone_dataset_for_user
+            clone_dataset_for_user(db, user.id)
+        except Exception as e:
+            print(f"Failed to clone dataset for new user: {e}")
+            
     return user
 
 def get_current_active_user(
