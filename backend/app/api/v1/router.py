@@ -20,7 +20,7 @@ api_router.include_router(candidate_router.router, prefix="/candidate", tags=["C
 api_router.include_router(ats_router.router, prefix="/ats", tags=["ATS Scoring"], dependencies=[Depends(get_current_active_user)])
 api_router.include_router(ranking_router.router, prefix="/ranking", tags=["Ranking"], dependencies=[Depends(get_current_active_user)])
 api_router.include_router(analytics_router.router, prefix="/analytics", tags=["Analytics"], dependencies=[Depends(get_current_active_user)])
-api_router.include_router(report_router.router, prefix="/reports", tags=["Reports"], dependencies=[Depends(get_current_active_user)])
+api_router.include_router(report_router.router, prefix="/report", tags=["Reports"], dependencies=[Depends(get_current_active_user)])
 api_router.include_router(settings_router.router, prefix="/settings", tags=["Settings"], dependencies=[Depends(get_current_admin_user)])
 api_router.include_router(ai_router.router, prefix="/ai", tags=["AI Intelligence"], dependencies=[Depends(get_current_active_user)])
 api_router.include_router(chat_router.router, prefix="/chat", tags=["Real-time Collaboration"])

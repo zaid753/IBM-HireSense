@@ -35,7 +35,18 @@ def calculate_ats(
         
     # 3. Run ATS Engine
     jd_text = f"{job.title}\n{job.description}"
-    required_skills = job.required_skills if job.required_skills else None
+    required_skills = None
+    if job.required_skills:
+        if isinstance(job.required_skills, str):
+            try:
+                import json
+                required_skills = json.loads(job.required_skills)
+                if not isinstance(required_skills, list):
+                    required_skills = [str(required_skills)]
+            except Exception:
+                required_skills = [s.strip() for s in job.required_skills.split(",") if s.strip()]
+        else:
+            required_skills = job.required_skills
     
     result = calculate_ats_score(analysis.parsed_json, jd_text, required_skills)
     

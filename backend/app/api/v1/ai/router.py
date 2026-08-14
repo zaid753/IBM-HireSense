@@ -27,13 +27,19 @@ class InterviewRequest(BaseModel):
 def analyze_resume(
     resume_id: int,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: Recruiter = Depends(get_current_active_user),
 ):
     """
     Triggers deep semantic analysis of a resume.
     We use BackgroundTasks to ensure the API returns instantly.
     """
-    # Background task logic would go here (e.g., generating embeddings and storing in DB)
+    resume = db.query(Resume).filter(
+        Resume.id == resume_id,
+        Resume.recruiter_id == current_user.id,
+    ).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
     return {"message": "Semantic analysis started in the background.", "resume_id": resume_id}
 
 @router.post("/interview")
@@ -60,7 +66,10 @@ def semantic_search(
     
     search_docs = []
     for c in candidates:
-        ats = db.query(ATSResult).filter(ATSResult.resume_id == c.resume_id).first()
+        ats_query = db.query(ATSResult).filter(ATSResult.resume_id == c.resume_id)
+        if request.job_id is not None:
+            ats_query = ats_query.filter(ATSResult.job_id == request.job_id)
+        ats = ats_query.first()
         skills = ", ".join(ats.matched_skills) if ats and ats.matched_skills else ""
         search_docs.append({
             "id": c.resume_id,
@@ -135,7 +144,11 @@ def get_insights(
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
         
-    insights = generative_engine.generate_recruiter_insights({}, {})
+    analysis = resume.analysis
+    insights = generative_engine.generate_recruiter_insights(
+        analysis.parsed_json if analysis and analysis.parsed_json else {},
+        {},
+    )
     return insights
 
 @router.post("/copilot")

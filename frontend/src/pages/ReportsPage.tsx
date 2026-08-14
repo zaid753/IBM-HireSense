@@ -31,7 +31,7 @@ export function ReportsPage() {
   });
 
   const filteredReports = reports.filter((r: any) => 
-    r.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    r.report_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     r.report_type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -184,7 +184,7 @@ export function ReportsPage() {
                       </div>
                       <div>
                         <div className="font-medium text-white group-hover:text-primary transition-colors cursor-pointer">
-                          {report.title}
+                          {report.report_name}
                         </div>
                         <div className="text-xs text-muted-foreground">ID: #{report.id}</div>
                       </div>
@@ -193,7 +193,7 @@ export function ReportsPage() {
                   <TableCell>
                     <Badge className={getBadgeColor(report.report_type)}>{report.report_type}</Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{new Date(report.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-muted-foreground">{new Date(report.generated_at).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right text-muted-foreground">1.5 MB</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">

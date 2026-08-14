@@ -8,6 +8,7 @@ from typing import Any, List
 from app.dependencies.db import get_db
 from app.dependencies.auth import get_current_active_user
 from app.models.recruiter import Recruiter
+from app.models.resume import Resume
 from app.schemas.resume import ResumeOut
 from app.services.resume import resume_service
 from app.repositories import resume as repo_resume
@@ -69,6 +70,13 @@ def delete_resume(
     if not resume or resume.recruiter_id != current_user.id:
         raise HTTPException(status_code=404, detail="Resume not found")
     repo_resume.remove(db, id=id)
+    file_path = os.path.join(settings.UPLOAD_DIR, resume.stored_filename)
+    try:
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+    except OSError:
+        # The database deletion is still valid; surface no sensitive path details.
+        pass
     return {"message": "Resume deleted successfully"}
 
 @router.get("/download/{id}")
@@ -98,7 +106,7 @@ def parse_resume_endpoint(
     import os
     from app.core.config import settings
     from app.services.parsing.parser import parse_resume
-    from app.models.resume import ResumeAnalysis
+    from app.models.resume import ResumeAnalysis, CandidateProfile
     
     resume = repo_resume.get(db, id=id)
     if not resume or resume.recruiter_id != current_user.id:
@@ -119,8 +127,21 @@ def parse_resume_endpoint(
     if not analysis:
         analysis = ResumeAnalysis(resume_id=id)
         db.add(analysis)
-        
+
     analysis.parsed_json = parsed_data.model_dump()
+
+    # Create or update CandidateProfile from parsed personal info
+    personal = parsed_data.personal_info
+    profile = db.query(CandidateProfile).filter(CandidateProfile.resume_id == id).first()
+    if not profile:
+        profile = CandidateProfile(resume_id=id)
+        db.add(profile)
+    if personal:
+        profile.full_name = personal.full_name
+        profile.email = personal.email
+        profile.phone = personal.phone_number
+        profile.location = personal.location
+
     db.commit()
     db.refresh(analysis)
     
@@ -141,6 +162,5 @@ def get_parsed_resume(
     
     if not analysis or not analysis.parsed_json:
         raise HTTPException(status_code=404, detail="Parsed data not found. Please parse the resume first.")
-        
-    return analysis.parsed_json
 
+    return analysis.parsed_json

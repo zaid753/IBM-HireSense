@@ -16,9 +16,8 @@ api.interceptors.request.use(
       // Always fetch the latest ID token from Firebase
       const currentUser = auth.currentUser;
       if (currentUser) {
-        const token = await currentUser.getIdToken(true); // forceRefresh=true ensures validity if needed, but false is usually fine. Using false for performance.
-        const cachedToken = await currentUser.getIdToken();
-        config.headers.Authorization = `Bearer ${cachedToken}`;
+        const token = await currentUser.getIdToken();
+        config.headers.Authorization = `Bearer ${token}`;
       }
       
       // Request Logging

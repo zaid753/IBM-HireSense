@@ -1,20 +1,33 @@
 from typing import Dict, List, Any
 
-def match_skills(candidate_skills: Dict[str, List[str]], jd_skills: List[str]) -> Dict[str, Any]:
+def match_skills(candidate_skills: Dict[str, Any], jd_skills: Any) -> Dict[str, Any]:
     """
     Compares candidate skills against job description required skills.
     In a real scenario, jd_skills would be extracted from the JD.
     For this foundation, we simulate required skills based on JD text if not provided explicitly.
     """
+    # Normalize jd_skills to be a list
+    if isinstance(jd_skills, str):
+        jd_skills_list = [s.strip() for s in jd_skills.split(",") if s.strip()]
+    elif isinstance(jd_skills, list):
+        jd_skills_list = jd_skills
+    else:
+        jd_skills_list = []
+
     # Flatten candidate skills
     all_candidate_skills = []
-    if candidate_skills:
+    if candidate_skills and isinstance(candidate_skills, dict):
         for category, skills in candidate_skills.items():
             if skills:
-                all_candidate_skills.extend([s.lower() for s in skills])
+                if isinstance(skills, str):
+                    all_candidate_skills.extend([s.strip().lower() for s in skills.split(",") if s.strip()])
+                elif isinstance(skills, list):
+                    all_candidate_skills.extend([str(s).lower() for s in skills])
+    elif candidate_skills and isinstance(candidate_skills, list):
+        all_candidate_skills.extend([str(s).lower() for s in candidate_skills])
                 
     # Normalize JD skills
-    jd_skills_lower = [s.lower() for s in jd_skills]
+    jd_skills_lower = [str(s).lower() for s in jd_skills_list]
     
     matched = list(set(all_candidate_skills) & set(jd_skills_lower))
     missing = list(set(jd_skills_lower) - set(all_candidate_skills))

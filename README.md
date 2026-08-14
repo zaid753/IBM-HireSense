@@ -95,10 +95,24 @@ cd hiresense-ai
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
+# Required for backend Firebase token verification.
+# Put the service-account JSON on one line in your shell environment or .env:
+# FIREBASE_SERVICE_ACCOUNT_JSON='{"type":"service_account",...}'
+# Alternatively set FIREBASE_CREDENTIALS to a mounted JSON file path.
+
 # Build and start the containers
 docker compose up --build -d
 ```
 The Frontend will be available at `http://localhost:80` and the Backend API at `http://localhost:8000`.
+
+To stop the stack:
+
+```bash
+docker compose down
+```
+
+PostgreSQL data, uploaded resumes, and backend logs are kept in Docker volumes. Use
+`docker compose down -v` only when you intentionally want to delete that local data.
 
 ## 🔒 Security & Performance
 - **A+ Security**: Implements `slowapi` rate limiting, strict CORS, `nosniff` headers, and XSS protection.

@@ -2,30 +2,31 @@ import firebase_admin
 from firebase_admin import credentials
 from loguru import logger
 import os
+import json
 
 def init_firebase():
-    os.environ['GOOGLE_CLOUD_PROJECT'] = 'hiresense-5e81a'
+    project_id = os.environ.get("FIREBASE_PROJECT_ID", "hiresense-5e81a")
+    os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
     if not firebase_admin._apps:
         try:
             # Check if a specific service account path is provided
             service_account_path = os.environ.get("FIREBASE_CREDENTIALS")
-            options = {'projectId': 'hiresense-5e81a'}
+            service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+            options = {"projectId": project_id}
             
             if service_account_path and os.path.exists(service_account_path):
                 cred = credentials.Certificate(service_account_path)
                 firebase_admin.initialize_app(cred, options=options)
                 logger.info("Firebase Admin initialized with certificate.")
+            elif service_account_json:
+                cred = credentials.Certificate(json.loads(service_account_json))
+                firebase_admin.initialize_app(cred, options=options)
+                logger.info("Firebase Admin initialized from service-account JSON.")
             else:
-                try:
-                    # Try to use Application Default Credentials
-                    firebase_admin.initialize_app(options=options)
-                    logger.info("Firebase Admin initialized with ADC and explicit projectId.")
-                except ValueError:
-                    # If ADC fails
-                    firebase_admin.initialize_app(options=options)
-                    logger.info("Firebase Admin initialized with explicit project ID.")
+                firebase_admin.initialize_app(options=options)
+                logger.info("Firebase Admin initialized with application default credentials.")
         except Exception as e:
-            logger.warning(f"Firebase Admin initialization warning: {e}")
+            logger.warning("Firebase Admin credentials unavailable; authenticated requests will be rejected.")
 
 def verify_token(id_token: str):
     from firebase_admin import auth

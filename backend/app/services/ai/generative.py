@@ -16,17 +16,32 @@ class GenerativeAIEngine:
 
     def generate_recruiter_insights(self, resume_data: Dict[str, Any], job_desc: Dict[str, Any]) -> Dict[str, Any]:
         """Generates AI insights on a candidate's fit for a role."""
+        skills = resume_data.get("skills", {}) if isinstance(resume_data, dict) else {}
+        skill_count = sum(len(values or []) for values in skills.values() if isinstance(values, list))
+        experience = resume_data.get("experience", []) if isinstance(resume_data, dict) else []
+        projects = resume_data.get("projects", []) if isinstance(resume_data, dict) else []
+        strengths = []
+        if skill_count:
+            strengths.append(f"Profile contains {skill_count} extracted technical and professional skills.")
+        if experience:
+            strengths.append(f"Resume includes {len(experience)} experience entries.")
+        if projects:
+            strengths.append(f"Resume demonstrates practical work through {len(projects)} project entries.")
+        if not strengths:
+            strengths.append("Resume data is available for review, but few structured details were extracted.")
+
+        weaknesses = []
+        if not experience:
+            weaknesses.append("No structured work experience was detected.")
+        if not projects:
+            weaknesses.append("No structured projects were detected.")
+        if not weaknesses:
+            weaknesses.append("Validate extracted dates and achievements during recruiter review.")
+
         return {
-            "strengths": [
-                "Strong background in React and frontend architecture.",
-                "Experience with modern state management libraries.",
-                "Proven track record of delivering scalable applications."
-            ],
-            "weaknesses": [
-                "Limited backend or database experience.",
-                "Could improve on CI/CD pipeline knowledge."
-            ],
-            "summary": "This candidate is a strong fit for the frontend role, bringing extensive React experience. They may need some ramp-up time for full-stack tasks."
+            "strengths": strengths,
+            "weaknesses": weaknesses,
+            "summary": "Insights were generated from the structured resume fields available to HireSense."
         }
 
     def generate_resume_improvements(self, resume_data: Dict[str, Any]) -> List[str]:

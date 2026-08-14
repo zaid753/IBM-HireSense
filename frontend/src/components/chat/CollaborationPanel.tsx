@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, MessageSquare } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
+import { auth } from "@/lib/firebase";
 
 interface Note {
   id: number;
@@ -19,19 +20,21 @@ export function CollaborationPanel({ candidateId }: { candidateId: number }) {
   const { user } = useAuthStore();
 
   useEffect(() => {
-    // In a real app, use wss:// and pass auth token if needed
-    ws.current = new WebSocket(`ws://localhost:8000/api/v1/chat/${candidateId}`);
-
-    ws.current.onmessage = (event) => {
-      const newNote = JSON.parse(event.data);
-      setNotes((prev) => {
-        // Prevent duplicate appending if id matches (history load logic)
-        if (prev.some((n) => n.id === newNote.id)) return prev;
-        return [...prev, newNote];
-      });
-    };
+    let closed = false;
+    void auth.currentUser?.getIdToken().then((token) => {
+      if (!closed) {
+        const wsBase = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1")
+          .replace(/^http/, "ws");
+        ws.current = new WebSocket(`${wsBase}/chat/${candidateId}?token=${encodeURIComponent(token)}`);
+        ws.current.onmessage = (event) => {
+          const newNote = JSON.parse(event.data);
+          setNotes((prev) => prev.some((n) => n.id === newNote.id) ? prev : [...prev, newNote]);
+        };
+      }
+    });
 
     return () => {
+      closed = true;
       ws.current?.close();
     };
   }, [candidateId]);
@@ -45,7 +48,6 @@ export function CollaborationPanel({ candidateId }: { candidateId: number }) {
     if (message.trim() && ws.current) {
       ws.current.send(
         JSON.stringify({
-          recruiter_id: user?.id || 1,
           content: message,
         })
       );

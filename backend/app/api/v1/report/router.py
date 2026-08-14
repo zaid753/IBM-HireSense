@@ -32,9 +32,8 @@ def generate_report(
     
     report = Report(
         recruiter_id=current_user.id,
-        title=f"{report_type} - {uuid.uuid4().hex[:6].upper()}",
+        report_name=f"{report_type} - {uuid.uuid4().hex[:6].upper()}",
         report_type=report_type,
-        file_path=f"/reports/{uuid.uuid4().hex}.pdf"
     )
     db.add(report)
     db.commit()
@@ -85,7 +84,7 @@ def download_report(
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=16)
-    pdf.cell(200, 10, txt=report.title, ln=True, align='C')
+    pdf.cell(200, 10, txt=report.report_name, ln=True, align='C')
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt=f"Type: {report.report_type}", ln=True)
     

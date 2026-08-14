@@ -4,8 +4,10 @@ import json
 from sqlalchemy.orm import Session
 from app.dependencies.db import get_db
 from app.models.chat import CandidateNote
+from app.models.resume import CandidateProfile, Resume
 from app.models.recruiter import Recruiter
 from app.dependencies.auth import get_current_user
+from app.core.firebase import verify_token
 
 router = APIRouter()
 
@@ -37,10 +39,20 @@ manager = ConnectionManager()
 async def websocket_endpoint(
     websocket: WebSocket, 
     candidate_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    # In a real app, we would authenticate the WebSocket connection using a token passed in query params
-    # For now, we will assume the connection is authorized for simplicity, or we can parse a token if sent in the first message.
+    token = websocket.query_params.get("token")
+    decoded = verify_token(token) if token else None
+    email = decoded.get("email") if decoded else None
+    recruiter = db.query(Recruiter).filter(Recruiter.email == email).first() if email else None
+    candidate = db.query(CandidateProfile).join(Resume).filter(
+        CandidateProfile.id == candidate_id,
+        Resume.recruiter_id == recruiter.id if recruiter else False,
+    ).first()
+    if not recruiter or not candidate:
+        await websocket.close(code=1008)
+        return
+
     await manager.connect(websocket, candidate_id)
     
     # Send history
@@ -58,14 +70,7 @@ async def websocket_endpoint(
             data = await websocket.receive_text()
             payload = json.loads(data)
             
-            # Expecting payload to contain { token, content }
-            # Validate token (simplified)
-            # We would decode JWT here and get recruiter_id
-            
-            # For simplicity in this demo, let's assume the payload just has recruiter_id and content
-            # since full WebSocket auth with Depends is complex and often requires passing token in URI or first message.
-            
-            recruiter_id = payload.get("recruiter_id", 1) # Default to 1 if not provided
+            recruiter_id = recruiter.id
             content = payload.get("content", "")
             
             if content:
