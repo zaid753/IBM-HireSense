@@ -48,9 +48,13 @@ logger.add("logs/perf.log", rotation="10 MB", filter=lambda record: "perf" in re
 app.add_middleware(SecurityHeadersMiddleware)
 
 # CORS config
+origins = ["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174"]
+if settings.FRONTEND_URL:
+    origins.append(settings.FRONTEND_URL.rstrip("/"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174"], # Explicit origins required when allow_credentials is True
+    allow_origins=origins, # Explicit origins required when allow_credentials is True
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

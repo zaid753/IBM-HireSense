@@ -1,10 +1,18 @@
 import re
 import spacy
 
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    nlp = None
+nlp = None
+_nlp_initialized = False
+
+def get_nlp():
+    global nlp, _nlp_initialized
+    if not _nlp_initialized:
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            nlp = None
+        _nlp_initialized = True
+    return nlp
 
 def clean_and_lemmatize(text: str) -> str:
     """
@@ -20,8 +28,9 @@ def clean_and_lemmatize(text: str) -> str:
     text = re.sub(r'[^a-z0-9\+#\s]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
 
-    if nlp:
-        doc = nlp(text)
+    current_nlp = get_nlp()
+    if current_nlp:
+        doc = current_nlp(text)
         # Filter out stopwords and punctuation, then lemmatize
         tokens = [
             token.lemma_ for token in doc 

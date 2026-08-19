@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE: int = 10485760 # 10 MB
 
     GEMINI_API_KEY: str | None = None
+    FRONTEND_URL: str | None = None
 
     class Config:
         env_file = ".env"

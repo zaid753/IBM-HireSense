@@ -1,6 +1,4 @@
 import os
-from sentence_transformers import SentenceTransformer, util
-import torch
 import numpy as np
 from typing import List, Dict, Any
 
@@ -10,23 +8,34 @@ class SemanticEngine:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(SemanticEngine, cls).__new__(cls)
-            cls._instance._initialize()
+            cls._instance.initialized = False
         return cls._instance
 
     def _initialize(self):
+        if self.initialized:
+            return
+            
         """Loads the sentence-transformers model. We use all-MiniLM-L6-v2 for fast, high-quality semantic matching."""
         # Check if we should mock for testing/fast startup
         self.mock_mode = os.environ.get("MOCK_AI", "false").lower() == "true"
         if not self.mock_mode:
             try:
+                # Lazy import to save memory on startup (prevents OOM kill on Render free tier)
+                from sentence_transformers import SentenceTransformer, util
+                self.util = util
+                
                 # Load the model directly. This downloads it if not cached (~80MB).
                 self.model = SentenceTransformer('all-MiniLM-L6-v2')
             except Exception as e:
                 print(f"Warning: Could not load SentenceTransformer model. Falling back to mock mode. Error: {e}")
                 self.mock_mode = True
+                
+        self.initialized = True
 
     def get_embedding(self, text: str) -> List[float]:
         """Generates a dense vector embedding for the input text."""
+        self._initialize()
+        
         if self.mock_mode:
             # Return random vector of dimension 384 (size of MiniLM)
             return np.random.rand(384).tolist()
@@ -37,6 +46,8 @@ class SemanticEngine:
 
     def calculate_similarity(self, source_text: str, target_texts: List[str]) -> List[float]:
         """Calculates Cosine Similarity between a source text (e.g., JD) and multiple targets (e.g., Resumes)."""
+        self._initialize()
+        
         if self.mock_mode:
             return [np.random.uniform(0.5, 0.99) for _ in target_texts]
             
@@ -45,7 +56,7 @@ class SemanticEngine:
         
         # util.cos_sim returns a matrix of shape (len(source), len(targets))
         # Since we have 1 source, it's (1, N). We extract the first row and convert to CPU list.
-        cosine_scores = util.cos_sim(source_embedding, target_embeddings)[0]
+        cosine_scores = self.util.cos_sim(source_embedding, target_embeddings)[0]
         return cosine_scores.cpu().tolist()
 
     def smart_search(self, query: str, candidate_documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
