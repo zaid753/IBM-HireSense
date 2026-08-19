@@ -1,8 +1,7 @@
 import axios from "axios";
 import { auth } from "@/lib/firebase";
-
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000/api/v1" : "https://ibm-hiresense-5.onrender.com/api/v1"),
   headers: {
     "Content-Type": "application/json",
   },

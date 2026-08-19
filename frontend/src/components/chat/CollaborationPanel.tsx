@@ -23,7 +23,7 @@ export function CollaborationPanel({ candidateId }: { candidateId: number }) {
     let closed = false;
     void auth.currentUser?.getIdToken().then((token) => {
       if (!closed) {
-        const wsBase = (import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1")
+        const wsBase = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000/api/v1" : "https://ibm-hiresense-5.onrender.com/api/v1"))
           .replace(/^http/, "ws");
         ws.current = new WebSocket(`${wsBase}/chat/${candidateId}?token=${encodeURIComponent(token)}`);
         ws.current.onmessage = (event) => {

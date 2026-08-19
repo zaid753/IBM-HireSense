@@ -18,7 +18,7 @@ interface ChatMessage {
 
 export function AIDashboard() {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "ai", content: "I'm your HireSense AI Copilot. How can I help you source candidates or analyze metrics today?" }
+    { role: "ai", content: "I'm your HireSense Copilot. How can I help you source candidates or analyze metrics today?" }
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);

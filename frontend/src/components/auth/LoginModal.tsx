@@ -103,7 +103,7 @@ export function LoginModal({ children, defaultOpen = false }: LoginModalProps) {
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-center">
             {mode === "login" 
-              ? "Sign in to your HireSense AI account" 
+              ? "Sign in to your HireSense account" 
               : "Enter your email below to create your account"}
           </DialogDescription>
         </DialogHeader>

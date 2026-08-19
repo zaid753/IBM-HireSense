@@ -88,7 +88,7 @@ export function LoginPage() {
             <BrainCircuit className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-bold font-heading text-white mb-2">Welcome back</h1>
-          <p className="text-muted-foreground">Sign in to your HireSense AI account</p>
+          <p className="text-muted-foreground">Sign in to your HireSense account</p>
         </div>
 
         <Card className="glass-card border-white/10 p-2">

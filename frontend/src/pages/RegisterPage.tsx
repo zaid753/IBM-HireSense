@@ -67,7 +67,7 @@ export function RegisterPage() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <div className="w-3 h-3 bg-white rounded-full" />
             </div>
-            <span className="text-2xl font-bold font-heading text-white tracking-tight">HireSense AI</span>
+            <span className="text-2xl font-bold font-heading text-white tracking-tight">HireSense</span>
           </div>
           <p className="text-muted-foreground">Create an account</p>
         </div>

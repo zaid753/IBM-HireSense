@@ -104,21 +104,7 @@ export function LandingPage() {
             </Button>
           </motion.div>
           
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="mt-8 flex items-center space-x-4 text-sm text-muted-foreground"
-          >
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted overflow-hidden">
-                  <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="User" />
-                </div>
-              ))}
-            </div>
-            <span>Join 10,000+ recruiters</span>
-          </motion.div>
+
         </div>
 
         {/* Dashboard Mockup - Floating Browser */}
@@ -160,7 +146,7 @@ export function LandingPage() {
               <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
               <div className="w-3.5 h-3.5 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
               <div className="mx-auto bg-white/5 rounded-md px-4 py-1 text-xs text-muted-foreground font-mono group-hover:bg-white/10 transition-colors">
-                hiresense.ai/dashboard
+                hiresense/dashboard
               </div>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             </div>
@@ -459,7 +445,7 @@ export function LandingPage() {
         <div className="container mx-auto px-6 relative z-10 text-center">
           <h2 className="text-4xl md:text-6xl font-black font-heading mb-6 text-white tracking-tight">Ready to hire smarter?</h2>
           <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Join thousands of modern recruiting teams using HireSense AI to build better teams, faster.
+            Join thousands of modern recruiting teams using HireSense to build better teams, faster.
           </p>
           {localStorage.getItem('auth-storage') && JSON.parse(localStorage.getItem('auth-storage') || '{}').state?.token ? (
             <Button size="lg" variant="gradient" className="text-lg px-10 h-16 rounded-full shadow-[0_0_40px_rgba(37,99,235,0.4)] hover:shadow-[0_0_60px_rgba(37,99,235,0.6)] transition-all hover:scale-105" asChild>
@@ -488,7 +474,7 @@ export function LandingPage() {
                   <BrainCircuit className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-black font-heading tracking-tight text-white">
-                  HireSense<span className="text-primary">.ai</span>
+                  HireSense
                 </span>
               </Link>
               <p className="text-muted-foreground max-w-sm">
@@ -542,7 +528,7 @@ export function LandingPage() {
           
           <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-muted-foreground text-sm">
-              © {new Date().getFullYear()} HireSense AI. All rights reserved.
+              © {new Date().getFullYear()} HireSense. All rights reserved.
             </p>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />

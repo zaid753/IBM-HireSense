@@ -51,7 +51,7 @@ export function Sidebar() {
               animate={{ opacity: 1, x: 0 }}
               className="text-xl font-bold tracking-tight font-heading text-white whitespace-nowrap"
             >
-              HireSense<span className="text-primary">AI</span>
+              HireSense
             </motion.span>
           )}
         </Link>

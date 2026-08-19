@@ -17,7 +17,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
               <BrainCircuit className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold tracking-tight font-heading text-white">
-              HireSense<span className="text-primary">AI</span>
+              HireSense
             </span>
           </Link>
           
