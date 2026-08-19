@@ -53,7 +53,8 @@ origins = [
     "http://localhost:5174", 
     "http://127.0.0.1:5173", 
     "http://127.0.0.1:5174",
-    "https://ibm-hire-sense.vercel.app"
+    "https://ibm-hire-sense.vercel.app",
+    "https://ibm-hire-sense-seven.vercel.app"
 ]
 if settings.FRONTEND_URL:
     origins.append(settings.FRONTEND_URL.rstrip("/"))
